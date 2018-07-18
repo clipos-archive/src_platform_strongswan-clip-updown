@@ -1,0 +1,50 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -252,6 +252,7 @@ ARG_ENABL_SET([systime-fix],    [enable
+ ARG_ENABL_SET([test-vectors],   [enable plugin providing crypto test vectors.])
+ ARG_ENABL_SET([unit-tester],    [enable unit tests on IKEv2 daemon startup.])
+ ARG_DISBL_SET([updown],         [disable updown firewall script plugin.])
++ARG_ENABL_SET([clip-updown],    [enable CLIP updown plugin.])
+ # programs/components
+ ARG_DISBL_SET([charon],         [disable the IKEv1/IKEv2 keying daemon charon.])
+ ARG_ENABL_SET([cmd],            [enable the command line IKE client charon-cmd.])
+@@ -1134,6 +1135,7 @@ ADD_PLUGIN([stroke],               [c ch
+ ADD_PLUGIN([smp],                  [c charon])
+ ADD_PLUGIN([sql],                  [c charon])
+ ADD_PLUGIN([updown],               [c charon])
++ADD_PLUGIN([clip-updown],          [c libcharon])
+ ADD_PLUGIN([eap-identity],         [c charon nm cmd])
+ ADD_PLUGIN([eap-sim],              [c charon])
+ ADD_PLUGIN([eap-sim-file],         [c charon])
+@@ -1272,6 +1274,7 @@ AM_CONDITIONAL(USE_SQL, test x$sql = xtr
+ AM_CONDITIONAL(USE_DNSCERT, test x$dnscert = xtrue)
+ AM_CONDITIONAL(USE_IPSECKEY, test x$ipseckey = xtrue)
+ AM_CONDITIONAL(USE_UPDOWN, test x$updown = xtrue)
++AM_CONDITIONAL(USE_CLIP_UPDOWN, test x$clip_updown = xtrue)
+ AM_CONDITIONAL(USE_DHCP, test x$dhcp = xtrue)
+ AM_CONDITIONAL(USE_UNIT_TESTS, test x$unit_tester = xtrue)
+ AM_CONDITIONAL(USE_LOAD_TESTER, test x$load_tester = xtrue)
+@@ -1582,6 +1585,7 @@ AC_CONFIG_FILES([
+ 	src/libcharon/plugins/maemo/Makefile
+ 	src/libcharon/plugins/stroke/Makefile
+ 	src/libcharon/plugins/updown/Makefile
++	src/libcharon/plugins/clip_updown/Makefile
+ 	src/libcharon/plugins/dhcp/Makefile
+ 	src/libcharon/plugins/unit_tester/Makefile
+ 	src/libcharon/plugins/load_tester/Makefile
+--- a/src/libcharon/Makefile.am
++++ b/src/libcharon/Makefile.am
+@@ -245,6 +245,13 @@ if MONOLITHIC
+ endif
+ endif
+ 
++if USE_CLIP_UPDOWN
++  SUBDIRS += plugins/clip_updown
++if MONOLITHIC
++  libcharon_la_LIBADD += plugins/clip_updown/libstrongswan-clip-updown.la
++endif
++endif
++
+ if USE_EAP_IDENTITY
+   SUBDIRS += plugins/eap_identity
+ if MONOLITHIC
